@@ -576,6 +576,10 @@ var sudoku = {
         rec.forEach((item) => {
             this.cells.forEach((row, r) => {
                 row.forEach((cell, c) => {
+                    if(item.value == 0){
+                        cell.clearPencil();
+                        return;
+                    }
                     if (!cell.isPencil(item.value)) {
                         return;
                     }
