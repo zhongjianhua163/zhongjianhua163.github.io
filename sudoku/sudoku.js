@@ -741,8 +741,8 @@ for (var i = 0; i < sm.length; i++) {
     sm[i].addEventListener('click', (e) => sudoku.numbarBoardEvent(e));
     //移动端点击事件
     sm[i].addEventListener('touchstart', (e) => {
+        document.getElementById('sudokuStr').value = 'event';
         sudoku.numbarBoardEvent(e);
-        console.log(e);
         e.preventDefault();
     });
 }
