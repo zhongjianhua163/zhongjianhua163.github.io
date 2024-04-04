@@ -163,7 +163,7 @@ class Cell {
             var pencilCount = 0;
             for (var i = 1; i < 10; i++) {
                 pencilHtml += `<div class="pencil-grid-cell pgc-${i}">`;
-                if (true == this.pencil[i]) {
+                if (this.pencil[i]) {
                     pencilCount++;
 
                     pencilHtml += '<svg width="20" height="31" viewBox="0 0 20 31.4">';
@@ -188,6 +188,16 @@ class Cell {
         }
     }
 
+    addClass(className) {
+        if (!this.cell.classList.contains(className)) {
+            this.cell.classList.add(className);
+        }
+    }
+
+    removeClass(className) {
+        this.cell.classList.remove(className);
+    }
+
     setTips(tips, type) {
         var className = 'cell-tips';
         if (type == 2) {
@@ -198,23 +208,19 @@ class Cell {
         }
 
         if (tips) {
-            if (!this.cell.classList.contains(className)) {
-                this.cell.classList.add(className);
-            }
+            this.addClass(className);
         }
         else {
-            this.cell.classList.remove(className);
+            this.removeClass(className);
         }
     }
 
     setSelected(selected) {
         if (selected) {
-            if (true != this.cell.classList.contains('cell-selected')) {
-                this.cell.classList.add('cell-selected');
-            }
+            this.addClass('cell-selected');
         }
         else {
-            this.cell.classList.remove('cell-selected');
+            this.removeClass('cell-selected');
         }
     }
 
@@ -684,6 +690,21 @@ var sudoku = {
     reset: function () {
         var d = this.base;
         this.init(d);
+    },
+
+    input: function (key) {
+        if (key >= '0' && key <= '9') {
+            if (document.getElementById('pencil').checked) {
+                sudoku.setPencil(parseInt(key));
+            }
+            else {
+                sudoku.setValue(parseInt(key));
+            }
+        }
+        else if (key == 'Delete') {
+            sudoku.setValue(0);
+            sudoku.clearPencil();
+        }
     }
 };
 
@@ -703,20 +724,27 @@ const sudokuBoard = [
 
 sudoku.init(sudokuBoard);
 //sudoku.solve();
+var sm = document.getElementById('selNum').getElementsByClassName('game-cell');
+for (var i = 0; i < sm.length; i++) {
+    sm[i].addEventListener('click', function (event) {
+        var div = event.target;
+        while (div && !div.classList.contains('game-cell')) {
+            div = div.parentNode;
+        }
+        if (!div) {
+            return;
+        }
+
+        sudoku.input(div.id.substring(1, 2));
+    });
+}
 
 window.addEventListener('keydown', function (event) {
     if (event.key >= '0' && event.key <= '9') {
-        if (document.getElementById('pencil').checked) {
-            sudoku.setPencil(parseInt(event.key));
-        }
-        else {
-            sudoku.setValue(parseInt(event.key));
-        }
-
+        sudoku.input(event.key);
     }
     else if (event.key == 'Delete') {
-        sudoku.setValue(0);
-        sudoku.clearPencil();
+        sudoku.input(event.key);
     }
     else if (event.key == 'Control' || event.key == 'Alt' || event.key == 'Shift') {
         document.getElementById('autoSel').checked = true;
