@@ -695,17 +695,29 @@ var sudoku = {
     input: function (key) {
         if (key >= '0' && key <= '9') {
             if (document.getElementById('pencil').checked) {
-                sudoku.setPencil(parseInt(key));
+                this.setPencil(parseInt(key));
             }
             else {
-                sudoku.setValue(parseInt(key));
+                this.setValue(parseInt(key));
             }
         }
         else if (key == 'Delete') {
-            sudoku.setValue(0);
-            sudoku.clearPencil();
+            this.setValue(0);
+            this.clearPencil();
         }
-    }
+    },
+
+    numbarBoardEvent: function (event) {
+        var div = event.target;
+        while (div && !div.classList.contains('game-cell')) {
+            div = div.parentNode;
+        }
+        if (!div) {
+            return;
+        }
+        document.getElementById('sudokuStr').value = div.id;
+        this.input(div.id.substring(1, 2));
+    },
 };
 
 
@@ -726,16 +738,12 @@ sudoku.init(sudokuBoard);
 //sudoku.solve();
 var sm = document.getElementById('selNum').getElementsByClassName('game-cell');
 for (var i = 0; i < sm.length; i++) {
-    sm[i].addEventListener('click', function (event) {
-        var div = event.target;
-        while (div && !div.classList.contains('game-cell')) {
-            div = div.parentNode;
-        }
-        if (!div) {
-            return;
-        }
-
-        sudoku.input(div.id.substring(1, 2));
+    sm[i].addEventListener('click', (e) => sudoku.numbarBoardEvent(e));
+    //移动端点击事件
+    sm[i].addEventListener('touchstart', (e) => {
+        sudoku.numbarBoardEvent(e);
+        console.log(e);
+        e.preventDefault();
     });
 }
 
