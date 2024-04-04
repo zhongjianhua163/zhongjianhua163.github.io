@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Sudoku</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="sudoku.css">
+</head>
+
+<body>
+    <div class="game-wrapper">
+        <div id="game" class="game">
+            <table class="game-table">
+                <tbody>
+                    <tr class="game-row">
+                        <td class="game-cell" id="r0c0"></td>
+                        <td class="game-cell" id="r0c1"></td>
+                        <td class="game-cell" id="r0c2"></td>
+                        <td class="game-cell" id="r0c3"></td>
+                        <td class="game-cell" id="r0c4"></td>
+                        <td class="game-cell" id="r0c5"></td>
+                        <td class="game-cell" id="r0c6"></td>
+                        <td class="game-cell" id="r0c7"></td>
+                        <td class="game-cell" id="r0c8"></td>
+                    </tr>
+                    <tr class="game-row">
+                        <td class="game-cell" id="r1c0"></td>
+                        <td class="game-cell" id="r1c1"></td>
+                        <td class="game-cell" id="r1c2"></td>
+                        <td class="game-cell" id="r1c3"></td>
+                        <td class="game-cell" id="r1c4"></td>
+                        <td class="game-cell" id="r1c5"></td>
+                        <td class="game-cell" id="r1c6"></td>
+                        <td class="game-cell" id="r1c7"></td>
+                        <td class="game-cell" id="r1c8"></td>
+                    </tr>
+                    <tr class="game-row">
+                        <td class="game-cell" id="r2c0"></td>
+                        <td class="game-cell" id="r2c1"></td>
+                        <td class="game-cell" id="r2c2"></td>
+                        <td class="game-cell" id="r2c3"></td>
+                        <td class="game-cell" id="r2c4"></td>
+                        <td class="game-cell" id="r2c5"></td>
+                        <td class="game-cell" id="r2c6"></td>
+                        <td class="game-cell" id="r2c7"></td>
+                        <td class="game-cell" id="r2c8"></td>
+                    </tr>
+                    <tr class="game-row">
+                        <td class="game-cell" id="r3c0"></td>
+                        <td class="game-cell" id="r3c1"></td>
+                        <td class="game-cell" id="r3c2"></td>
+                        <td class="game-cell" id="r3c3"></td>
+                        <td class="game-cell" id="r3c4"></td>
+                        <td class="game-cell" id="r3c5"></td>
+                        <td class="game-cell" id="r3c6"></td>
+                        <td class="game-cell" id="r3c7"></td>
+                        <td class="game-cell" id="r3c8"></td>
+                    </tr>
+                    <tr class="game-row">
+                        <td class="game-cell" id="r4c0"></td>
+                        <td class="game-cell" id="r4c1"></td>
+                        <td class="game-cell" id="r4c2"></td>
+                        <td class="game-cell" id="r4c3"></td>
+                        <td class="game-cell" id="r4c4"></td>
+                        <td class="game-cell" id="r4c5"></td>
+                        <td class="game-cell" id="r4c6"></td>
+                        <td class="game-cell" id="r4c7"></td>
+                        <td class="game-cell" id="r4c8"></td>
+                    </tr>
+                    <tr class="game-row">
+                        <td class="game-cell" id="r5c0"></td>
+                        <td class="game-cell" id="r5c1"></td>
+                        <td class="game-cell" id="r5c2"></td>
+                        <td class="game-cell" id="r5c3"></td>
+                        <td class="game-cell" id="r5c4"></td>
+                        <td class="game-cell" id="r5c5"></td>
+                        <td class="game-cell" id="r5c6"></td>
+                        <td class="game-cell" id="r5c7"></td>
+                        <td class="game-cell" id="r5c8"></td>
+                    </tr>
+                    <tr class="game-row">
+                        <td class="game-cell" id="r6c0"></td>
+                        <td class="game-cell" id="r6c1"></td>
+                        <td class="game-cell" id="r6c2"></td>
+                        <td class="game-cell" id="r6c3"></td>
+                        <td class="game-cell" id="r6c4"></td>
+                        <td class="game-cell" id="r6c5"></td>
+                        <td class="game-cell" id="r6c6"></td>
+                        <td class="game-cell" id="r6c7"></td>
+                        <td class="game-cell" id="r6c8"></td>
+                    </tr>
+                    <tr class="game-row">
+                        <td class="game-cell" id="r7c0"></td>
+                        <td class="game-cell" id="r7c1"></td>
+                        <td class="game-cell" id="r7c2"></td>
+                        <td class="game-cell" id="r7c3"></td>
+                        <td class="game-cell" id="r7c4"></td>
+                        <td class="game-cell" id="r7c5"></td>
+                        <td class="game-cell" id="r7c6"></td>
+                        <td class="game-cell" id="r7c7"></td>
+                        <td class="game-cell" id="r7c8"></td>
+                    </tr>
+                    <tr class="game-row">
+                        <td class="game-cell" id="r8c0"></td>
+                        <td class="game-cell" id="r8c1"></td>
+                        <td class="game-cell" id="r8c2"></td>
+                        <td class="game-cell" id="r8c3"></td>
+                        <td class="game-cell" id="r8c4"></td>
+                        <td class="game-cell" id="r8c5"></td>
+                        <td class="game-cell" id="r8c6"></td>
+                        <td class="game-cell" id="r8c7"></td>
+                        <td class="game-cell" id="r8c8"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="game-controls">
+                <div style="padding-top: 10px;">
+                    <input id="autoSel" type="checkbox" title="按住Ctrl开启">反选</input>
+                    <input id="pencil" type="checkbox" title="滑动鼠标滚动切换">笔记</input>
+                </div>
+                <div style="padding-top: 10px;">
+                    <button type="button" onclick='sudoku.showCandidates()'>显示候选</button>
+                    <button type="button" onclick='sudoku.solve()'>求解</button>
+                    <button type="button" onclick='sudoku.setValue(0)'>清除</button>
+                    <button type="button" onclick='sudoku.reset()'>重置</button>
+                    <button type="button" onclick='sudoku.initByStr("0")'>清空</button>
+                    <button type="button" onclick='sudoku.undo()'>撤回</button>
+                    <button type="button" onclick='sudoku.redo()'>重做</button>
+                </div>
+                <div style="padding-top: 10px;">
+                    <input id="sudokuStr" type="text" placeholder="字符串录入 0代表空格子 !@#$%^&*()-= 依次代表1到12个0"
+                        style="width: 85%" />
+                    <button type="button" onclick='sudoku.initByStr()' style="width: 10%; overflow: hidden;">确定</button>
+                </div>
+                <div style="padding-top: 10px; display: flex; flex-direction: column; overflow-wrap: break-word;">
+                    <i>当前字符串:</i>
+                    <span id="str"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="sudoku.js"></script>
+</body>
+
+</html>
