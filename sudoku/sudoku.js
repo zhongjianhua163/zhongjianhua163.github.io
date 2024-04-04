@@ -314,16 +314,47 @@ var sudoku = {
     init: function (gameData) {
         this.cells = this.sudokuArray();
         this.base = gameData;
+        var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
         for (var r = 0; r < 9; ++r) {
             for (var c = 0; c < 9; ++c) {
                 this.cells[r][c] = new Cell(r, c, gameData[r][c]);
-                if (false == this.eventListened) {
+                if (isMobile == false && false == this.eventListened) {
                     this.listenEvent(this.cells[r][c].cell);
                 }
             }
         }
 
+        if (isMobile && false == this.eventListened) {
+            let elm = document.getElementById("gameTable");
+            elm.addEventListener('touchstart', (e) => {
+                // 获取触摸点的信息
+                let touch = event.touches[0];
+                let element = document.elementFromPoint(touch.clientX, touch.clientY);
+                this.mouseDown({ target: element })
+            });
+            elm.addEventListener('touchend', (e) => {
+                this.mouseUp(e)
+            });
+            elm.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+
+                // 获取触摸点的信息
+                let touch = event.touches[0];
+                let element = document.elementFromPoint(touch.clientX, touch.clientY);
+                while (element && !element.classList.contains('game-cell')) {
+                    element = element.parentNode;
+                }
+
+                // 对比是否跟上一次的元素相同
+                if (element === this.lastElement) {
+                    return;
+                }
+                this.lastElement = element;
+
+                this.mouseEnter({ target: element });
+            });
+        }
         this.eventListened = true;
         this.dump();
     },
@@ -393,10 +424,6 @@ var sudoku = {
         elm.addEventListener('mousedown', (e) => this.mouseDown(e));
         elm.addEventListener('mouseenter', (e) => this.mouseEnter(e));
         elm.addEventListener('mouseup', (e) => this.mouseUp(e));
-
-        elm.addEventListener('touchstart', (e) => this.mouseDown(e));
-        elm.addEventListener('touchend', (e) => this.mouseUp(e));
-        elm.addEventListener('touchmove', (e) => this.mouseEnter(e));
     },
 
     strToSudokuArray: function (str) {
