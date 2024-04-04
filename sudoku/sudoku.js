@@ -328,73 +328,75 @@ var sudoku = {
         this.dump();
     },
 
+    mouseDown: function (e) {
+        var div = e.target;
+        while (div && !div.classList.contains('game-cell')) {
+            div = div.parentNode;
+        }
+        if (!div) {
+            return;
+        }
+        // 取id并分析出r和c
+        var id = div.id;
+        var r = parseInt(id.substr(1, 1));
+        var c = parseInt(id.substr(3, 1));
+
+        this.isMouseDown = true;
+
+        if (document.getElementById('autoSel').checked) {
+            this.cells[r][c].setSelected(false == this.cells[r][c].isSelected());
+        }
+        else {
+            this.cells.forEach(row => {
+                row.forEach(cell => {
+                    cell.setSelected(cell.cell.id == div.id);
+                });
+            });
+        }
+
+        if (this.cells[r][c].isSelected()) {
+            this.updateTips(r, c);
+        }
+        else {
+            this.updateTips(-1, -1);
+        }
+    },
+
+    mouseEnter: function (e) {
+        var div = e.target;
+        while (div && !div.classList.contains('game-cell')) {
+            div = div.parentNode;
+        }
+
+        var id = div.id;
+        var r = parseInt(id.substr(1, 1));
+        var c = parseInt(id.substr(3, 1));
+
+
+        if (false == this.isMouseDown) {
+            return;
+        }
+
+        if (document.getElementById('autoSel').checked) {
+            this.cells[r][c].setSelected(false == this.cells[r][c].isSelected());
+        }
+        else {
+            this.cells[r][c].setSelected(true);
+        }
+    },
+
+    mouseUp: function (e) {
+        this.isMouseDown = false;
+    },
 
     listenEvent: function (elm) {
-        elm.addEventListener('mousedown', (e) => {
-            var div = e.target;
-            while (div && !div.classList.contains('game-cell')) {
-                div = div.parentNode;
-            }
-            if (!div) {
-                return;
-            }
-            // 取id并分析出r和c
-            var id = div.id;
-            var r = parseInt(id.substr(1, 1));
-            var c = parseInt(id.substr(3, 1));
+        elm.addEventListener('mousedown', (e) => this.mouseDown(e));
+        elm.addEventListener('mouseenter', (e) => this.mouseEnter(e));
+        elm.addEventListener('mouseup', (e) => this.mouseUp(e));
 
-            this.isMouseDown = true;
-
-            if (document.getElementById('autoSel').checked) {
-                this.cells[r][c].setSelected(false == this.cells[r][c].isSelected());
-            }
-            else {
-                this.cells.forEach(row => {
-                    row.forEach(cell => {
-                        cell.setSelected(cell.cell.id == div.id);
-                    });
-                });
-            }
-
-            if (this.cells[r][c].isSelected()) {
-                this.updateTips(r, c);
-            }
-            else {
-                this.updateTips(-1, -1);
-            }
-
-        });
-
-        elm.addEventListener('mouseenter', (e) => {
-            var div = e.target;
-            while (div && !div.classList.contains('game-cell')) {
-                div = div.parentNode;
-            }
-
-            var id = div.id;
-            var r = parseInt(id.substr(1, 1));
-            var c = parseInt(id.substr(3, 1));
-
-
-            if (false == this.isMouseDown) {
-                return;
-            }
-
-            if (document.getElementById('autoSel').checked) {
-                this.cells[r][c].setSelected(false == this.cells[r][c].isSelected());
-            }
-            else {
-                this.cells[r][c].setSelected(true);
-            }
-        });
-
-        elm.addEventListener('mouseleave', (e) => {
-            //this.updateTips(-1, -1);
-        });
-
-        elm.addEventListener('mouseup', (e) => {
-            this.isMouseDown = false;
-        });
+        elm.addEventListener('touchstart', (e) => this.mouseDown(e));
+        elm.addEventListener('touchend', (e) => this.mouseUp(e));
+        elm.addEventListener('touchmove', (e) => this.mouseEnter(e));
     },
 
     strToSudokuArray: function (str) {
@@ -715,7 +717,6 @@ var sudoku = {
         if (!div) {
             return;
         }
-        document.getElementById('sudokuStr').value = div.id;
         this.input(div.id.substring(1, 2));
     },
 };
@@ -741,7 +742,6 @@ for (var i = 0; i < sm.length; i++) {
     sm[i].addEventListener('click', (e) => sudoku.numbarBoardEvent(e));
     //移动端点击事件
     sm[i].addEventListener('touchstart', (e) => {
-        document.getElementById('sudokuStr').value = 'event';
         sudoku.numbarBoardEvent(e);
         e.preventDefault();
     });
