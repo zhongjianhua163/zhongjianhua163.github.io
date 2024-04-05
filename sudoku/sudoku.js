@@ -556,8 +556,22 @@ var sudoku = {
             row.forEach((cell, c) => {
                 if (cell.isSelected() && cell.orgNum == 0) {
                     cell.setValue(num);
-                    if (0 == num || sl.check(b, r, c, num)) {
-                        cell.setTips(false, 3);
+                    if (checkInput) {
+                        if (0 == num || sl.check(b, r, c, num)) {
+                            cell.setTips(false, 3);
+                            rec.push(
+                                {
+                                    row: r,
+                                    col: c,
+                                    value: num
+                                }
+                            );
+                        }
+                        else {
+                            cell.setTips(true, 3);
+                        }
+                    }
+                    else {
                         rec.push(
                             {
                                 row: r,
@@ -565,9 +579,6 @@ var sudoku = {
                                 value: num
                             }
                         );
-                    }
-                    else {
-                        cell.setTips(true, 3);
                     }
                 }
             });
@@ -757,11 +768,25 @@ var sudoku = {
 };
 
 var hash = location.hash;
+var checkInput = false;
+
+if (hash.substring(1, 2) == 'c') {
+    checkInput = true;
+    hash = hash.substring(1);
+}
+
 if (hash.length > 1) {
     sudoku.initByStr(hash.substring(1));
 }
-else{
+else {
     sudoku.initByStr('@3!78#4@1=62&95@9!146#21%4!9(235!8$6@2!7@');
+}
+
+if (!checkInput) {
+    let needc = document.getElementsByClassName('needc');
+    for (let i = 0; i < needc.length; i++) {
+        needc[i].style.display = 'none';
+    }
 }
 
 //sudoku.solve();
