@@ -531,7 +531,7 @@ var sudoku = {
 
     solve: function () {
         var res = sl.solveSudoku(this.getData());
-        if (!res || res.length == 0) {
+        if (res.length == 0) {
             console.log("No solution found");
             return;
         }
@@ -544,6 +544,7 @@ var sudoku = {
                 this.cells[r][c].setValue(data[r][c] ?? 0);
             }
         }
+
         this.dump();
     },
 
@@ -755,7 +756,13 @@ var sudoku = {
     },
 };
 
-sudoku.initByStr('@3!78#4@1=62&95@9!146#21%4!9(235!8$6@2!7@');
+var hash = location.hash;
+if (hash.length > 1) {
+    sudoku.initByStr(hash.substring(1));
+}
+else{
+    sudoku.initByStr('@3!78#4@1=62&95@9!146#21%4!9(235!8$6@2!7@');
+}
 
 //sudoku.solve();
 var sm = document.getElementById('selNum').getElementsByClassName('game-cell');
