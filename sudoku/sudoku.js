@@ -748,10 +748,34 @@ var sudoku = {
             else {
                 this.setValue(parseInt(key));
             }
+
+            if (!sl.findEmptySpot(this.getData())) {
+                this.check();
+            }
         }
         else if (key == 'Delete') {
             this.setValue(0);
             this.clearPencil();
+        }
+    },
+    check: function () {
+        let t = this.getData();
+        let b = sl.copyBoard(this.base);
+        let s = sl.solveSudoku(b, 1);
+        if (s.length > 0) {
+            for (let i = 0; i < 9; i++) {
+                for (let j = 0; j < 9; j++) {
+                    if (t[i][j] != 0 && t[i][j] != s[0][i][j]) {
+                        alert('错误!');
+                        return;
+                    }
+                }
+            }
+
+            alert('完全正确!');
+        }
+        else {
+            alert('此题无解!');
         }
     },
 
@@ -766,28 +790,40 @@ var sudoku = {
         this.input(div.id.substring(1, 2));
     },
 };
-
-var hash = location.hash;
+var puzzles = [];
 var checkInput = false;
-
-if (hash.substring(1, 2) == 'c') {
-    checkInput = true;
-    hash = hash.substring(1);
+function randomOne() {
+    hash = puzzles[Math.floor(Math.random() * puzzles.length)];
+    sudoku.initByStr(hash.puzzle);
 }
 
-if (hash.length > 1) {
-    sudoku.initByStr(hash.substring(1));
-}
-else {
-    sudoku.initByStr('@3!78#4@1=62&95@9!146#21%4!9(235!8$6@2!7@');
-}
-
-if (!checkInput) {
-    let needc = document.getElementsByClassName('needc');
-    for (let i = 0; i < needc.length; i++) {
-        needc[i].style.display = 'none';
+window.addEventListener('load', function () {
+    var hash = location.hash;
+    if (hash.substring(1, 2) == 'c') {
+        checkInput = true;
+        hash = hash.substring(2);
     }
-}
+
+    if (hash.length == 0) {
+        fetch("puzzles.json").then(function (response) {
+            return response.json();
+        }).then(function (text) {
+            puzzles = text;
+            randomOne();
+        });
+    }
+    else {
+        sudoku.initByStr(hash);
+    }
+
+    if (!checkInput) {
+        let needc = document.getElementsByClassName('needc');
+        for (let i = needc.length -1 ; i >=0; i--) {
+            needc[i].parentNode.removeChild(needc[i]);
+        }
+    }
+});
+
 
 //sudoku.solve();
 var sm = document.getElementById('selNum').getElementsByClassName('game-cell');
