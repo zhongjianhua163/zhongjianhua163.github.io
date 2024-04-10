@@ -185,8 +185,8 @@
                     </table>
                 </div>
                 <div style="padding-top: 10px;">
-                    <input id="autoSel" type="checkbox" title="按住Ctrl开启">反选</input>
-                    <input id="pencil" type="checkbox" title="滑动鼠标滚动切换">笔记</input>
+                    <input id="autoSel" type="checkbox" title="按住Ctrl开启">反选(Ctrl)</input>
+                    <input id="pencil" type="checkbox" title="滑动鼠标滚动切换">笔记(鼠标滚轮)</input>
                 </div>
                 <div style="padding-top: 10px;">
                     <button class="needc" type="button" onclick='sudoku.showCandidates()'>显示候选</button>
@@ -200,7 +200,7 @@
                     <button type="button" onclick='sudoku.check()'>检查</button>
                 </div>
                 <div style="padding-top: 10px;">
-                    <input id="sudokuStr" type="text" placeholder="字符串录入 0代表空格子 !@#$%^&*()-= 依次代表1到12个0"
+                    <input id="sudokuStr" type="text" placeholder="字符串录入 0代表空格子"
                         style="width: 85%" />
                     <button type="button" onclick='sudoku.initByStr()' style="width: 10%; overflow: hidden;">确定</button>
                 </div>

@@ -499,33 +499,13 @@ var sudoku = {
 
     getStr: function () {
         var str = '';
-        var t = '!@#$%^&*()-=';
         var c = 0;
         for (var i = 0; i < 81; i++) {
             var row = parseInt(i / 9);
             var col = i % 9;
             num = this.cells[row][col].value;
-            if (num == 0) {
-                c++;
-                if (c == 12) {
-                    str += '=';
-                    c = 0;
-                }
-                continue;
-            }
-
-            if (c > 0) {
-                str += t.substring(c - 1, c);
-                c = 0;
-            }
-
             str += num;
         }
-        if (c > 0) {
-            str += t.substring(c - 1, c);
-            c = 0;
-        }
-
         return str;
     },
 
