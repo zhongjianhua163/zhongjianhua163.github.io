@@ -451,8 +451,71 @@
     margin-bottom: 3px;
 }
 
-.game-controls{
+.game-controls {
     margin-top: 10px;
     display: flex;
     flex-direction: column;
+}
+
+.pencil-light1 {
+    .pgc-1 svg path {
+        fill: #0000ff;
+        stroke: #0000ff;
+    }
+}
+
+.pencil-light2 {
+    .pgc-2 svg path {
+        fill: #0000ff;
+        stroke: #0000ff;
+    }
+}
+
+.pencil-light3 {
+    .pgc-3 svg path {
+        fill: #0000ff;
+        stroke: #0000ff;
+    }
+}
+
+.pencil-light4 {
+    .pgc-4 svg path {
+        fill: #0000ff;
+        stroke: #0000ff;
+    }
+}
+
+.pencil-light5 {
+    .pgc-5 svg path {
+        fill: #0000ff;
+        stroke: #0000ff;
+    }
+}
+
+.pencil-light6 {
+    .pgc-6 svg path {
+        fill: #0000ff;
+        stroke: #0000ff;
+    }
+}
+
+.pencil-light7 {
+    .pgc-7 svg path {
+        fill: #0000ff;
+        stroke: #0000ff;
+    }
+}
+
+.pencil-light8 {
+    .pgc-8 svg path {
+        fill: #0000ff;
+        stroke: #0000ff;
+    }
+}
+
+.pencil-light9 {
+    .pgc-9 svg path {
+        fill: #0000ff;
+        stroke: #0000ff;
+    }
 }

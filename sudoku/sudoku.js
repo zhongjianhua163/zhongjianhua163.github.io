@@ -198,7 +198,7 @@ class Cell {
         this.cell.classList.remove(className);
     }
 
-    setTips(tips, type) {
+    setHighLight(isSet, type) {
         var className = 'cell-tips';
         if (type == 2) {
             className = 'cell-tips-same';
@@ -207,11 +207,22 @@ class Cell {
             className = 'cell-err';
         }
 
-        if (tips) {
+        if (isSet) {
             this.addClass(className);
         }
         else {
             this.removeClass(className);
+        }
+    }
+
+    setPencilHighLight(num) {
+        for (var i = 1; i < 10; i++) {
+            if (i == num) {
+                this.addClass(`pencil-light${i}`);
+            }
+            else {
+                this.removeClass(`pencil-light${i}`);
+            }
         }
     }
 
@@ -386,10 +397,10 @@ var sudoku = {
         }
 
         if (this.cells[r][c].isSelected()) {
-            this.updateTips(r, c);
+            this.updateHighlight(r, c);
         }
         else {
-            this.updateTips(-1, -1);
+            this.updateHighlight(-1, -1);
         }
     },
 
@@ -530,35 +541,35 @@ var sudoku = {
 
     setValue: function (num) {
         var rec = [];
-        // var b = this.base;
+        var hl = false;
         var b = this.getData();
         this.cells.forEach((row, r) => {
             row.forEach((cell, c) => {
                 if (cell.isSelected() && cell.orgNum == 0) {
                     cell.setValue(num);
+                    if (!hl) {
+                        this.updateHighlight(r, c);
+                        hl = true;
+                    }
                     if (checkInput) {
                         if (0 == num || sl.check(b, r, c, num)) {
-                            cell.setTips(false, 3);
-                            rec.push(
-                                {
-                                    row: r,
-                                    col: c,
-                                    value: num
-                                }
-                            );
-                        }
-                        else {
-                            cell.setTips(true, 3);
-                        }
-                    }
-                    else {
-                        rec.push(
-                            {
+                            cell.removeClass('cell-err');
+                            rec.push({
                                 row: r,
                                 col: c,
                                 value: num
-                            }
-                        );
+                            });
+                        }
+                        else {
+                            cell.addClass('cell-err');
+                        }
+                    }
+                    else {
+                        rec.push({
+                            row: r,
+                            col: c,
+                            value: num
+                        });
                     }
                 }
             });
@@ -663,7 +674,7 @@ var sudoku = {
         }
     },
 
-    updateTips: function (r, c) {
+    updateHighlight: function (r, c) {
         var num = -1;
         if (r >= 0 && c >= 0) {
             num = this.cells[r][c].getValue();
@@ -674,14 +685,15 @@ var sudoku = {
 
         for (var row = 0; row < 9; row++) {
             for (var col = 0; col < 9; col++) {
-                this.cells[row][col].setTips(
+                this.cells[row][col].setHighLight(
                     r == row    // same row
                     || c == col // same column
                     || (parseInt(r / 3) == parseInt(row / 3) && parseInt(c / 3) == parseInt(col / 3)), // same block
                     1 // type
                 );
 
-                this.cells[row][col].setTips(this.cells[row][col].getValue() == num, 2);
+                this.cells[row][col].setHighLight(this.cells[row][col].getValue() == num, 2);
+                this.cells[row][col].setPencilHighLight(num);
             }
         }
     },
@@ -798,7 +810,7 @@ window.addEventListener('load', function () {
 
     if (!checkInput) {
         let needc = document.getElementsByClassName('needc');
-        for (let i = needc.length -1 ; i >=0; i--) {
+        for (let i = needc.length - 1; i >= 0; i--) {
             needc[i].parentNode.removeChild(needc[i]);
         }
     }
@@ -818,9 +830,15 @@ for (var i = 0; i < sm.length; i++) {
 
 window.addEventListener('keydown', function (event) {
     if (event.key >= '0' && event.key <= '9') {
+        if (document.activeElement !== document.body) {
+            return;
+        }
         sudoku.input(event.key);
     }
     else if (event.key == 'Delete') {
+        if (document.activeElement !== document.body) {
+            return;
+        }
         sudoku.input(event.key);
     }
     else if (event.key == 'Control' || event.key == 'Alt' || event.key == 'Shift') {
@@ -833,7 +851,7 @@ window.addEventListener('keydown', function (event) {
         sudoku.redo();
     }
     else {
-        console.log(event.key);
+        //console.log(event);
     }
 });
 
