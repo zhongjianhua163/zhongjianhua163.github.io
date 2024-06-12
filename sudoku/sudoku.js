@@ -782,11 +782,12 @@ var sudoku = {
         this.input(div.id.substring(1, 2));
     },
 };
-var puzzles = [];
+// var puzzles = [];
 var checkInput = false;
 function randomOne() {
-    hash = puzzles[Math.floor(Math.random() * puzzles.length)];
-    sudoku.initByStr(hash.puzzle);
+    //hash = puzzles[Math.floor(Math.random() * puzzles.length)];
+    var str = sudoku2.generate('inhuman');
+    sudoku.initByStr(str.replace(/\./g, '0'));
 }
 
 window.addEventListener('load', function () {
@@ -797,12 +798,13 @@ window.addEventListener('load', function () {
     }
 
     if (hash.length == 0) {
-        fetch("puzzles.json").then(function (response) {
-            return response.json();
-        }).then(function (text) {
-            puzzles = text;
-            randomOne();
-        });
+        // fetch("puzzles.json").then(function (response) {
+        //     return response.json();
+        // }).then(function (text) {
+        //     puzzles = text;
+        //     randomOne();
+        // });
+        randomOne();
     }
     else {
         sudoku.initByStr(hash);
@@ -864,5 +866,3 @@ window.addEventListener('keyup', function (event) {
 window.addEventListener('wheel', function (event) {
     document.getElementById('pencil').checked = !document.getElementById('pencil').checked;
 });
-
-
