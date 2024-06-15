@@ -742,7 +742,16 @@ var sudoku = {
             }
 
             if (!sl.findEmptySpot(this.getData())) {
-                this.check();
+                var r = this.check();
+                if (r == 1) {
+                    alert("完成正确！");
+                }
+                else if (r == -1) {
+                    alert("无解！");
+                }
+                else if (r == 0) {
+                    alert("错误！");
+                }
             }
         }
         else if (key == 'Delete') {
@@ -758,17 +767,13 @@ var sudoku = {
             for (let i = 0; i < 9; i++) {
                 for (let j = 0; j < 9; j++) {
                     if (t[i][j] != 0 && t[i][j] != s[0][i][j]) {
-                        alert('错误!');
-                        return;
+                        return 0;
                     }
                 }
             }
-
-            alert('完全正确!');
+            return 1;
         }
-        else {
-            alert('此题无解!');
-        }
+        return -1; //无解
     },
 
     numbarBoardEvent: function (event) {
@@ -786,7 +791,11 @@ var sudoku = {
 var checkInput = false;
 function randomOne() {
     //hash = puzzles[Math.floor(Math.random() * puzzles.length)];
-    var str = sudoku2.generate('inhuman');
+    var diff = document.getElementById('difficulty').value;
+    if (diff.length == 0) {
+        diff = 'inhuman';
+    }
+    var str = sudoku2.generate(diff);
     sudoku.initByStr(str.replace(/\./g, '0'));
 }
 
