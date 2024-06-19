@@ -11,41 +11,73 @@ var numPath = [
     /* 9 */"M10.897 31.595c-4.983 0-8.613-2.974-9.454-7.547h2.871c.718 3.015 3.22 5.045 6.624 5.045 5.23 0 8.203-4.779 8.408-13.064.02-.205-.102-.471-.123-.676H19.1c-1.271 3.26-4.552 5.434-8.428 5.434-5.66 0-9.762-4.163-9.762-9.803C.91 5.1 5.175.792 11.102.792c4 0 7.157 2.01 9.003 5.68 1.313 2.298 1.969 5.333 1.969 9.106 0 10.028-4.102 16.017-11.177 16.017zm.226-13.248c4.245 0 7.485-3.2 7.485-7.28 0-4.39-3.22-7.794-7.465-7.794-4.224 0-7.403 3.302-7.403 7.63 0 4.285 3.035 7.444 7.383 7.444z"
 ];
 
-var sl = {
+(function (root) {
+    var sd = root.sd = {};
+
+    var DIFFICULTY = {
+        "easy": 19,
+        "medium": 28,
+        "hard": 37,
+        "very-hard": 46,
+        "insane": 55,
+        "inhuman": 64,
+        "impossible": 73
+    };
 
     // Sudoku solver
-    solveSudoku: function (board, max) {
-        const solutions = [];
-        this.solve(board, solutions, max ?? 20);
-        return solutions;
-    },
+    sd.solve = function (board, max, rnd) {
+        let p = {
+            board: this.copyBoard(board),
+            solutions: [],
+            max: max ?? 20,
+            nc: [9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
+            emptySpot: [],
+            emptySpotIdx: 0,
+            rnd: rnd ?? false,
+        }
 
-    solve: function (board, solutions, max) {
-        const emptySpot = this.findEmptySpot(board);
-        if (!emptySpot) {
-            solutions.push(this.copyBoard(board));
+        board.forEach((row, rowIndex) =>
+            row.forEach((num, colIndex) => {
+                if (num !== 0) {
+                    p.nc[num]--;
+                } else {
+                    p.emptySpot.push([rowIndex, colIndex]);
+                }
+            })
+        );
+
+        this.attemptSolve(p);
+        return p.solutions;
+    };
+
+    sd.attemptSolve = function (p) {
+        if (p.emptySpotIdx >= p.emptySpot.length) {
+            p.solutions.push(this.copyBoard(p.board));
             return true; // All spots filled, puzzle solved
         }
 
-        const [row, col] = emptySpot;
-
-        for (let num = 1; num <= 9; num++) {
-            if (this.isValid(board, row, col, num)) {
-                board[row][col] = num;
-                if (this.solve(board, solutions, max)) {
-                    if (solutions.length >= max) {
+        let [row, col] = p.emptySpot[p.emptySpotIdx++];
+        let start = p.rnd ? Math.floor(Math.random() * 10) : 0;
+        for (let i = 0; i < 9; i++) {
+            let num = (start + i) % 9 + 1;
+            if (--p.nc[num] >= 0 && this.isValid(p.board, row, col, num)) {
+                p.board[row][col] = num;
+                if (this.attemptSolve(p)) {
+                    if (p.solutions.length >= p.max) {
+                        p.nc[num]++;
                         return true;
                     }
                 }
-                board[row][col] = 0;
+                p.board[row][col] = 0;
             }
+            p.nc[num]++;
         }
-
+        p.emptySpotIdx--;
         return false; // No valid number found
-    },
+    };
 
     // 将输入的数独数据进行校验
-    check: function (base, r, c, num) {
+    sd.check = function (base, r, c, num) {
         if (!this.isValid(base, r, c, num)) {
             return false;
         }
@@ -53,47 +85,26 @@ var sl = {
         var d = this.copyBoard(base);
         d[r][c] = num;
 
-        return this.solveSudoku(d, 1).length > 0;
-    },
+        return this.solve(d, 1).length > 0;
+    };
 
-    findEmptySpot: function (board) {
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
-                if (board[row][col] === 0) {
-                    return [row, col];
-                }
-            }
-        }
-        return null; // No empty spot found
-    },
-
-    isValid: function (board, row, col, num) {
+    sd.isValid = function (board, row, col, num) {
         return (
             this.isRowValid(board, row, num) &&
             this.isColValid(board, col, num) &&
             this.isBoxValid(board, row - (row % 3), col - (col % 3), num)
         );
-    },
+    };
 
-    isRowValid: function (board, row, num) {
-        for (let col = 0; col < 9; col++) {
-            if (board[row][col] === num) {
-                return false;
-            }
-        }
-        return true;
-    },
+    sd.isRowValid = function (board, row, num) {
+        return board[row].every(colValue => colValue !== num);
+    };
 
-    isColValid: function (board, col, num) {
-        for (let row = 0; row < 9; row++) {
-            if (board[row][col] === num) {
-                return false;
-            }
-        }
-        return true;
-    },
+    sd.isColValid = function (board, col, num) {
+        return board.every(row => row[col] !== num);
+    };
 
-    isBoxValid: function (board, startRow, startCol, num) {
+    sd.isBoxValid = function (board, startRow, startCol, num) {
         for (let row = 0; row < 3; row++) {
             for (let col = 0; col < 3; col++) {
                 if (board[row + startRow][col + startCol] === num) {
@@ -102,12 +113,76 @@ var sl = {
             }
         }
         return true;
-    },
+    };
 
-    copyBoard: function (board) {
+    sd.findEmptySpot = function (board) {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (board[row][col] === 0) {
+                    return [row, col];
+                }
+            }
+        }
+        return null;
+    };
+
+    sd.copyBoard = function (board) {
         return board.map(row => row.slice());
-    }
-};
+    };
+
+    sd.strToBoard = function (str) {
+        return Array.from({ length: 9 }, (_, i) =>
+            Array.from({ length: 9 }, (_, j) => parseInt(str[i * 9 + j]))
+        );
+    };
+
+    sd.boardToStr = function (board) {
+        return board.flatMap(row => row.join('')).join('');
+    };
+
+    sd.randomBoard = function () {
+        let board = Array.from({ length: 9 }, () => Array(9).fill(0));
+        let s = this.solve(board, 1, true);
+        return s ? s[0] : nullptr;
+    };
+
+    sd.generate = function (difficulty) {
+        if (typeof difficulty === "string" || typeof difficulty === "undefined") {
+            difficulty = DIFFICULTY[difficulty] || DIFFICULTY.easy;
+        }
+
+        // generate a random board
+        board = this.randomBoard();
+
+        let grid = [...Array(81).keys()];
+        let hole = 0;
+        while (grid.length > 0) {
+            // random dig
+            let i = Math.floor(Math.random() * grid.length);
+            let row = Math.floor(grid[i] / 9);
+            let col = grid[i] % 9;
+            grid.splice(i, 1);
+
+            let num = board[row][col];
+            board[row][col] = 0;
+            hole++;
+
+            // check
+            let s = this.solve(board, 2, false);
+            if (s && s.length == 1) { // only one solution
+                if (hole >= difficulty) {
+                    break;
+                }
+                continue;
+            }
+
+            // can not dig here
+            board[row][col] = num;
+            hole--;
+        }
+        return board;
+    };
+})(this);
 
 class Cell {
     constructor(row, col, num) {
@@ -521,7 +596,7 @@ var sudoku = {
     },
 
     solve: function () {
-        var res = sl.solveSudoku(this.getData());
+        var res = sd.solve(this.getData());
         if (res.length == 0) {
             console.log("No solution found");
             return;
@@ -552,7 +627,7 @@ var sudoku = {
                         hl = true;
                     }
                     if (checkInput) {
-                        if (0 == num || sl.check(b, r, c, num)) {
+                        if (0 == num || sd.check(b, r, c, num)) {
                             cell.removeClass('cell-err');
                             rec.push({
                                 row: r,
@@ -710,7 +785,7 @@ var sudoku = {
                 }
                 var nums = [];
                 for (var num = 1; num <= 9; num++) {
-                    if (sl.isValid(d, row, col, num)) {
+                    if (sd.isValid(d, row, col, num)) {
                         this.cells[row][col].setPencil(num);
                     }
                 }
@@ -741,7 +816,7 @@ var sudoku = {
                 this.setValue(parseInt(key));
             }
 
-            if (!sl.findEmptySpot(this.getData())) {
+            if (!sd.findEmptySpot(this.getData())) {
                 var r = this.check();
                 if (r == 1) {
                     alert("完成正确！");
@@ -761,8 +836,8 @@ var sudoku = {
     },
     check: function () {
         let t = this.getData();
-        let b = sl.copyBoard(this.base);
-        let s = sl.solveSudoku(b, 1);
+        let b = sd.copyBoard(this.base);
+        let s = sd.solve(b, 1);
         if (s.length > 0) {
             for (let i = 0; i < 9; i++) {
                 for (let j = 0; j < 9; j++) {
@@ -795,7 +870,7 @@ function randomOne() {
     if (diff.length == 0) {
         diff = 'inhuman';
     }
-    var str = sudoku2.generate(diff);
+    var str = sd.boardToStr(sd.generate(diff));
     sudoku.initByStr(str.replace(/\./g, '0'));
 }
 
