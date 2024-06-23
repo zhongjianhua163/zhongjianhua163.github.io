@@ -198,10 +198,10 @@ class Cell {
 
         this.cell = document.getElementById(`r${row}c${col}`);
         if (this.orgNum > 0 && this.orgNum < 10) {
-            this.cell.className = 'game-cell gv';
+            this.cell.className = 'game-cell gv'; // gv 有初始值的样式
         }
         else {
-            this.cell.className = 'game-cell';
+            this.cell.className = 'game-cell'; // 无初始值
         }
 
         this.render();
@@ -562,37 +562,17 @@ var sudoku = {
 
     // 返回一个9*9的空数组
     sudokuArray: function (fill) {
-        var data = new Array(9);
-        for (var i = 0; i < 9; i++) {
-            if (fill) {
-                data[i] = new Array(9).fill(fill);
-            } else {
-                data[i] = new Array(9);
-            }
-        }
-        return data;
+        return Array.from({ length: 9 }, () => fill ? new Array(9).fill(fill) : new Array(9));
     },
 
     getData: function () {
-        var data = this.sudokuArray();
-        for (var i = 0; i < 81; i++) {
-            var row = parseInt(i / 9);
-            var col = i % 9;
-            data[row][col] = this.cells[row][col].value;
-        }
-        return data;
+        return this.cells.map((row, rowIndex) =>
+            row.map((cell, colIndex) => cell.value)
+        );
     },
 
     getStr: function () {
-        var str = '';
-        var c = 0;
-        for (var i = 0; i < 81; i++) {
-            var row = parseInt(i / 9);
-            var col = i % 9;
-            num = this.cells[row][col].value;
-            str += num;
-        }
-        return str;
+        return this.cells.flat().map(cell => cell.value).join('');
     },
 
     solve: function () {
@@ -605,11 +585,11 @@ var sudoku = {
         // 随机取一个解
         var data = res[Math.floor(Math.random() * res.length)];
 
-        for (var r = 0; r < 9; r++) {
-            for (var c = 0; c < 9; c++) {
-                this.cells[r][c].setValue(data[r][c] ?? 0);
-            }
-        }
+        this.cells.forEach((row, r) =>
+            row.forEach((cell, c) =>
+                cell.setValue(data[r][c] ?? 0)
+            )
+        );
 
         this.dump();
     },
@@ -618,6 +598,8 @@ var sudoku = {
         var rec = [];
         var hl = false;
         var b = this.getData();
+
+        // 遍历所有被选中的格子，如果没有初始值，就设置为num
         this.cells.forEach((row, r) => {
             row.forEach((cell, c) => {
                 if (cell.isSelected() && cell.orgNum == 0) {
@@ -626,7 +608,7 @@ var sudoku = {
                         this.updateHighlight(r, c);
                         hl = true;
                     }
-                    if (checkInput) {
+                    if (checkInput) { // 全局开关，是否在输入数字后检查有效性
                         if (0 == num || sd.check(b, r, c, num)) {
                             cell.removeClass('cell-err');
                             rec.push({
@@ -650,7 +632,7 @@ var sudoku = {
             });
         });
 
-        // 清理笔记
+        // 清理笔记，将同行同列同宫中有相同数字的笔记删除
         rec.forEach((item) => {
             this.cells.forEach((row, r) => {
                 row.forEach((cell, c) => {
@@ -677,15 +659,23 @@ var sudoku = {
     },
 
     setPencil: function (num) {
+        let del = true; // 如果所有选中的格子都有这个数字，就删除这个数字，否则添加这个数字
+        this.cells.forEach(function (row, r) {
+            row.forEach(function (cell, c) {
+                if (cell.isSelected() && !cell.isPencil(num)) {
+                    del = false;
+                }
+            });
+        });
+
         this.cells.forEach(function (row, r) {
             row.forEach(function (cell, c) {
                 if (cell.isSelected()) {
-                    if (cell.isPencil(num)) {
+                    if (del) {
                         cell.delPencil(num);
                     }
                     else {
                         cell.setPencil(num);
-
                     }
                 }
             });
@@ -864,14 +854,38 @@ var sudoku = {
 };
 // var puzzles = [];
 var checkInput = false;
-function randomOne() {
-    //hash = puzzles[Math.floor(Math.random() * puzzles.length)];
-    var diff = document.getElementById('difficulty').value;
-    if (diff.length == 0) {
-        diff = 'inhuman';
-    }
-    var str = sd.boardToStr(sd.generate(diff));
-    sudoku.initByStr(str.replace(/\./g, '0'));
+async function randomOne() {
+    let loadingOverlay = document.getElementById('loadingOverlay');
+    loadingOverlay.style.display = 'flex'; // 确保先显示加载动画
+
+    // 使用setTimeout将数独生成放入宏任务队列，不阻塞UI线程
+    setTimeout(async () => {
+        var diff = document.getElementById('difficulty').value;
+        if (diff.length === 0) {
+            diff = 'inhuman';
+        }
+
+        try {
+            // 假设sd.generate支持返回Promise，或者我们手动将其包装成Promise
+            var generatedBoard = await new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    try {
+                        var str = sd.boardToStr(sd.generate(diff));
+                        resolve(str);
+                    } catch (error) {
+                        reject(error);
+                    }
+                }, 0); // 立即执行，但作为异步操作
+            });
+
+            generatedBoard = generatedBoard.replace(/\./g, '0'); // 替换字符
+            sudoku.initByStr(generatedBoard);
+        } catch (error) {
+            console.error("Error generating Sudoku:", error);
+        } finally {
+            loadingOverlay.style.display = 'none'; // 无论成功还是失败，都隐藏加载动画
+        }
+    }, 10); // 确保UI更新后再执行
 }
 
 window.addEventListener('load', function () {

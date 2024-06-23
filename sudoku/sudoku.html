@@ -7,64 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="sudoku.css">
     <link rel="shortcut icon" type="image/png" href="favicon.png">
-    <style>
-        .fireworks {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: url("e9951400.png") left top no-repeat;
-            background-size: auto 300px; 
-            animation: fireworks 1s steps(24) infinite, random_color 1s infinite;
-            background: #FFEFAD;
-            -webkit-mask: url("e9951400.png") left top no-repeat;
-            -webkit-mask-size: auto 300px;
-        }
-
-        @keyframes fireworks {
-            to {
-                background-position: 100%;
-                -webkit-mask-position: 100%;
-            }
-        }
-
-        @keyframes random {
-            25% {
-                transform: translate(200%, 50%) scale(0.8);
-            }
-            50% {
-                transform: translate(80%, 80%) scale(1.2);
-            }
-            75% {
-                transform: translate(20%, 60%) scale(0.65);
-            }
-        }
-
-        @keyframes random_color {
-            0% {
-                background-color: #ffefad;
-            }
-            25% {
-                background-color: #ffadad;
-            }
-            50% {
-                background-color: #aeadff;
-            }
-            75% {
-                background-color: #adffd9;
-            }
-        }
-
-        @media screen and (prefers-reduced-motion){
-            .fireworks{
-                animation: none;
-            }
-            
-        }
-    </style>
 </head>
 
 <body>
     <div class="game-wrapper">
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-box">
+                <div class="spinner"></div>
+                <p>正在全力生成题目...</p>
+            </div>
+        </div>
+
         <div id="game" class="game">
             <table id="gameTable" class="game-table">
                 <tbody>
@@ -275,7 +228,6 @@
             </div>
         </div>
     </div>
-    <!-- <div><div class="fireworks"></div>123</div> -->
     <script src="sudoku.js"></script>
 </body>
 
