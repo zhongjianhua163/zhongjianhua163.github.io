@@ -331,12 +331,12 @@
 
 .gv .cell-value {
     font-weight: 700;
-    color: #ed5565;
+    color: #585858;;
     cursor: default
 }
 
 .gv .cell-value svg path {
-    fill: #ed5565;
+    fill: #585858;;
 }
 
 .pencil-grid {
